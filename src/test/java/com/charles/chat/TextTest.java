@@ -3,6 +3,8 @@ package com.charles.chat;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TextTest {
@@ -29,7 +31,9 @@ public class TextTest {
     @Test
     public void callTimeTest() {
         String phoneTime = "☎ 通話時間26:19";
-
+        phoneTime = phoneTime.substring(6);
+        String[] phoneTimes = phoneTime.split(":");
+        List<String> times = Arrays.stream(phoneTimes).toList();
 
     }
 

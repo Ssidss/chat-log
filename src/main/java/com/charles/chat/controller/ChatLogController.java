@@ -2,9 +2,15 @@ package com.charles.chat.controller;
 
 import com.charles.chat.dto.RespDataDto;
 import com.charles.chat.dto.RespDto;
+import com.charles.chat.helper.ChatLogSaver;
+import com.charles.chat.model.ChatLog;
 import com.charles.chat.service.ChatLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Vector;
 
 @RestController
 @RequestMapping("/chat/log")
@@ -18,10 +24,26 @@ public class ChatLogController {
 //        return chatLogService.gogo();
 //    }
 
-    @GetMapping("/{join_user}")
-    public RespDataDto findByJoinUser(@PathVariable("join_user") String joinUser,
-                                      @RequestParam(required = false, defaultValue = "0") Integer page) {
-        return chatLogService.findByJoinUser(joinUser, page);
+//    @GetMapping("/{join_user}")
+//    public RespDataDto findByJoinUser(@PathVariable("join_user") String joinUser,
+//                                      @RequestParam(required = false, defaultValue = "0") Integer page) {
+//        return chatLogService.findByJoinUser(joinUser, page);
+//    }
+
+    @GetMapping("")
+    public RespDataDto getChat(@RequestParam(required = false, defaultValue = "0") Integer page) {
+        return this.chatLogService.getChat(page);
     }
 
+    @PostMapping("")
+    public RespDto saveFile(@RequestParam(name = "join_user") String joinUser,
+                                @RequestParam MultipartFile file) throws IOException {
+        return chatLogService.saveFile(joinUser, file);
+    }
+
+    @GetMapping("/delete")
+    public String delete() {
+        ChatLogSaver.getInstance().setChatLogList(new Vector<>());
+        return "";
+    }
 }

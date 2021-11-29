@@ -3,17 +3,17 @@ package com.charles.chat.model;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity(name = "chat_log")
-@Table(name = "chat_log",
-        indexes = {
-            @Index(columnList = "join_user")
-        }
-)
+//@Entity(name = "chat_log")
+//@Table(name = "chat_log",
+//        indexes = {
+//            @Index(columnList = "join_user")
+//        }
+//)
 public class ChatLog {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
 
     @Column(name = "user_name")
     private String userName;
@@ -35,14 +35,17 @@ public class ChatLog {
     @Column(name = "join_user")
     private String joinUser;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "phone_call_time")
+    private Integer phoneCallTime;
 
-    public ChatLog setId(Long id) {
-        this.id = id;
-        return this;
-    }
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public ChatLog setId(Long id) {
+//        this.id = id;
+//        return this;
+//    }
 
     public String getUserName() {
         return userName;
@@ -107,10 +110,19 @@ public class ChatLog {
         return this;
     }
 
+    public Integer getPhoneCallTime() {
+        return phoneCallTime;
+    }
+
+    public ChatLog setPhoneCallTime(Integer phoneCallTime) {
+        this.phoneCallTime = phoneCallTime;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "ChatLog{" +
-                "id=" + id +
+//                "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", message='" + message + '\'' +
                 ", sendAt=" + sendAt +

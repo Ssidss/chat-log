@@ -3,8 +3,7 @@ package com.charles.chat.helper;
 import com.charles.chat.constant.ChatContentType;
 import com.charles.chat.model.ChatLog;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -13,15 +12,24 @@ public class ChatTextReader {
 
     private List<ChatLog> chatLogList;
 
+    private static Integer[] TIME_SECOND = {1, 60, 3600};
+
     private static List<String> CHIN = Arrays.asList("討厭鬼");
 
     private static List<String> YEN = Arrays.asList("鋁箔");
 
-    public ChatTextReader(String filePath, String platform) {
+    public ChatTextReader(String filePath, String platform)  {
+
+    }
+
+    public ChatTextReader(InputStream fileInputStream, String platform) {
+        this.init(fileInputStream, platform);
+    }
+
+    public void init(InputStream fileInputStream, String platform) {
         chatLogList = new ArrayList<>();
         try {
-            File file = new File(filePath);
-            Scanner myReader = new Scanner(file);
+            Scanner myReader = new Scanner(fileInputStream);
             ChatLog chatLog;
             int i = 0;
             Date chatDate = new Date();
@@ -31,10 +39,12 @@ public class ChatTextReader {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd-HH:mm");
             String[] tmpString;
             String tmpChat = "";
+            Integer phoneCallTime = 0;
             boolean isNewLine = false;
             String userName = "";
             while (myReader.hasNextLine()) {
                 i++;
+                phoneCallTime = 0;
                 System.out.println("saving line: " + i);
                 String data = myReader.nextLine(); // 會把最後的換行拿掉
 //                System.out.print(data);
@@ -71,6 +81,7 @@ public class ChatTextReader {
                             contentType = ChatContentType.PICTURE;
                         } else if (tmpChat.startsWith("☎ 通話時間")) {
                             contentType = ChatContentType.PHONE_CALL;
+                            phoneCallTime = this.calculatePhoneTime(tmpChat.substring(6).split(":"));
                         } else if (tmpChat.startsWith("☎ 未接來電")) {
                             contentType = ChatContentType.MISS_CALL;
                         } else if (tmpChat.equals("[影片]")) {
@@ -99,6 +110,7 @@ public class ChatTextReader {
                             .setSendAt(chatDate)
                             .setContentType(contentType)
                             .setPlatform(platform)
+                            .setPhoneCallTime(phoneCallTime)
                             .setUserName(userName);
                     chatLogList.add(chatLog);
 //                    System.out.println(chatLog.toString());
@@ -106,10 +118,22 @@ public class ChatTextReader {
 
             }
             myReader.close();
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+    private Integer calculatePhoneTime(String[] phoneTimes) {
+        Integer res = 0;
+        List<String> newTime = new ArrayList<>();
+        for (int i = phoneTimes.length - 1; i >= 0 ; i--) {
+            newTime.add(phoneTimes[i]);
+        }
+        for (int i = 0; i < newTime.size(); i++) {
+            res = res + Integer.valueOf(newTime.get(i)) * TIME_SECOND[i];
+        }
+        return res;
     }
 
     public List<ChatLog> getChatLogList() {
