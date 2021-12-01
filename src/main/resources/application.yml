@@ -7,7 +7,14 @@ server:
 spring:
   servlet:
     multipart:
-      max-file-size: 150MB
+      max-file-size: 200MB
+      max-request-size: 200MB
+  mvc:
+    static-path-pattern: /_/**
+  resources:
+    static-locations: file:web/
+
+
   main:
     allow-bean-definition-overriding: true
 #  datasource:

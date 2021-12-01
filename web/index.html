@@ -1,0 +1,169 @@
+<html>
+  <head>
+      <meta charset="UTF-8">
+    <title>LineChatRecord</title>
+  </head>
+
+  <body>  
+    <div id = "app" style = "width:100%">
+        <!--div id = "file-upload">
+            <h2>上傳檔案</h2>
+            <button>送出</button>
+        </div-->
+        <div id = "chat-field" class = "chat-field" style="width:100%">
+            <div>
+                <button v-on:click="getChatLog(page)">跳到</button>
+                <input type="number" value="1" v-model="page"/>
+            </div>
+            <div>
+                {{pageRanges}}
+                <table>
+                    <thead>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(chatLog, chatIdx) in chatLogs" :key="chatIdx">
+                            <td v-if="chatLog.userName === user1" align="right">{{chatLog.message}}</td>
+                            <td v-else>{{chatLog.userName}}: {{chatLog.message}} </td>
+                            <td>{{formatDateTime(chatLog.sendAt)}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="heigh: -1">
+                            <td><button v-on:click="previousPage()">上一頁</button></td>
+                            <td v-for="(pg, pIdx) in pageRanges" :key="pg">
+                                <button>{{pg}}</button>
+                            </td>
+                            <td><button v-on:click="nextPage()">下一頁</button></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div id = "summary-field">
+        </div>
+    </div>
+    <!-- body end -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      var app = new Vue({
+        el: '#app',
+        data: {
+            pg: 0,
+            page: 1,
+            maxPage: 0,
+            pageRanges: [],
+            currentDate: "",
+            selPage: 0,
+            chatLogs: [
+                {
+                    "userName": "討厭鬼",
+                    "message": "Test123",
+                    "sendAt": "2021-08-12T14:42:00.000+00:00",
+                    "contentType": "訊息",
+                    "platform": "line",
+                    "joinUser": null,
+                    "phoneCallTime": 0,
+                    "highLine": false
+                },
+            ],
+            chatLog: {
+                "userName": "討厭鬼",
+                "message": "Test123",
+                "sendAt": "2021-08-12T14:42:00.000+00:00",
+                "contentType": "訊息",
+                "platform": "line",
+                "joinUser": null,
+                "phoneCallTime": 0,
+                "highLine": false
+            },
+            summary: {
+                "total_chat": 100033,
+                "total_phone_call": 169,
+                "total_message": 96055,
+                "total_sticker": 2736,
+                "total_video": 24,
+                "total_picture": 961,
+                "total_back": 75,
+                "total_miss_call": 13,
+                "total_phone_call_time": "140:47:41"
+            },
+            user1: "劉書銓",
+            user2: "鋁箔",
+        },
+        methods: {
+            isShe: async function(name) {
+                return name === "討厭鬼";
+            },
+            uploadFile: async function() {
+                var formdata = new FormData();
+                formdata.append("file", fileInput.files[0], "chat.txt");
+                formdata.append("join_user", "charles_remi");
+                
+                var requestOptions = {
+                    method: 'POST',
+                    body: formdata,
+                    redirect: 'follow'
+                };
+                
+                fetch("http://127.0.0.1:5920/api/chat/chat/log", requestOptions)
+                    .then(response => response.text())
+                    .then(result => console.log(result))
+                    .catch(error => console.log('error', error));
+            },   
+            previousPage: async function() {
+                this.getChatLog(this.selPage - 1);
+            },
+            nextPage: async function() {
+                this.getChatLog(this.selPage + 1);
+            },
+            getChatLog: async function(page) {
+                let that = this;
+                that.selPage = page;
+                var requestOptions = {
+                    method: 'GET',
+                    redirect: 'follow'
+                  };
+                  
+                fetch("http://127.0.0.1:5920/api/chat/chat/log?page="+page, requestOptions)
+                    .then(response => response.text())
+                    .then(function(resp){
+                        let res = JSON.parse(resp)
+                        that.chatLogs = res.data;
+                        that.maxPage = res.page;
+                        console.log(that.chatLogs);
+                        
+                    })
+                    .catch(error => console.log('error', error));
+                this.pageRanges = [];
+                for (i = Math.max(parseInt(this.selPage) - 2, 0); 
+                    i < Math.min(parseInt(this.selPage) + 4, this.maxPage); i++) {
+                    this.pageRanges.push(i);
+                    console.log(i);
+                }
+                this.$forceUpdate();
+                
+            },
+            formatTime(value) {
+                if (value) { 
+                    return moment(String(value)).format('HH:mm')
+                }
+            },   
+            formatDate(value) {
+                if (value) { 
+                    return moment(String(value)).format('yyyy-MM-DD')
+                }
+            },  
+            formatDateTime(value) {
+                if (value) { 
+                    return moment(String(value)).format('yyyy-MM-DD HH:mm')
+                }
+            },
+
+        },
+        watch: {
+        },
+      })
+    </script>
+  </body>
+</html>

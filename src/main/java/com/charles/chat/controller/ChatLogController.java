@@ -14,6 +14,7 @@ import java.util.Vector;
 
 @RestController
 @RequestMapping("/chat/log")
+@CrossOrigin(value = "*")
 public class ChatLogController {
 
     @Autowired
@@ -31,8 +32,10 @@ public class ChatLogController {
 //    }
 
     @GetMapping("")
-    public RespDataDto getChat(@RequestParam(required = false, defaultValue = "0") Integer page) {
-        return this.chatLogService.getChat(page);
+    public RespDataDto getChat(@RequestParam(required = false, defaultValue = "0") Integer page,
+                               @RequestParam(required = false, defaultValue = "", name = "start_at") String startAt,
+                               @RequestParam(required = false, defaultValue = "", name = "end_at") String endAt) {
+        return this.chatLogService.getChat(page, startAt, endAt);
     }
 
     @PostMapping("")
@@ -43,7 +46,7 @@ public class ChatLogController {
 
     @GetMapping("/delete")
     public String delete() {
-        ChatLogSaver.getInstance().setChatLogList(new Vector<>());
-        return "";
+        ChatLogSaver.getInstance().cleanALl();
+        return "done";
     }
 }

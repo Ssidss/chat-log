@@ -8,6 +8,6 @@ public class CleanChatLogTask implements Runnable {
 
     @Override
     public void run(){
-        ChatLogSaver.getInstance().setChatLogList(new Vector<>());
+        ChatLogSaver.getInstance().cleanALl();
     }
 }

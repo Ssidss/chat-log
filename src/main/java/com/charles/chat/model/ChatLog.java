@@ -9,7 +9,7 @@ import java.util.Date;
 //            @Index(columnList = "join_user")
 //        }
 //)
-public class ChatLog {
+public class ChatLog extends Object{
 
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)

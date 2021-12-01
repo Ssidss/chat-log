@@ -3,9 +3,11 @@ package com.charles.chat.service;
 import com.charles.chat.dto.RespDataDto;
 import com.charles.chat.dto.RespDto;
 import com.charles.chat.helper.ChatLogSaver;
+import com.charles.chat.helper.ChatLogSummary;
 import com.charles.chat.helper.ChatTextReader;
 import com.charles.chat.model.ChatLog;
 //import com.charles.chat.repository.ChatLogRepository;
+import com.charles.util.pagelist.PageListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,32 +24,22 @@ public class ChatLogService {
 //    @Autowired
 //    private ChatLogRepository chatLogRepository;
 
-    private List<ChatLog> chatLogList;
+    private ChatLogSaver chatLogSaver = ChatLogSaver.getInstance();
 
     private static int onePageQuantity = 100;
 
-    private Map<String, List<ChatLog>> chatLogCache = new HashMap<>();
-
-    public RespDto saveFile(String joinUser, MultipartFile file) throws IOException {
-        RespDto respDto = new RespDto().setResult("success");
-        ChatLogSaver.getInstance().setChatLogList(new ChatTextReader(file.getInputStream(), "line").getChatLogList());
-        return respDto;
+    public RespDto<?> saveFile(String joinUser, MultipartFile file) throws IOException {
+        RespDto<Object> respDto = new RespDto<>().setResult("success");
+        chatLogSaver.setChatLogList(new ChatTextReader(file.getInputStream(), "line").getChatLogList());
+        return respDto.setData(ChatLogSummary.summary(chatLogSaver.getChatLogList()));
     }
 
-    public RespDataDto getChat(Integer page) {
-        RespDataDto respDataDto = new RespDataDto().setResult("success");
+    public RespDataDto<?> getChat(Integer page, String startAt, String endAt) {
+        RespDataDto<Object> respDataDto = new RespDataDto<>().setResult("success");
         try {
-            List<ChatLog> chatLogList = ChatLogSaver.getInstance().getChatLogList();
-            respDataDto.setPage(chatLogList.size()/onePageQuantity);
-            int head = page * onePageQuantity;
-            int tail = Math.min(chatLogList.size(), (head + onePageQuantity));
-            try {
-                respDataDto = respDataDto.setData(chatLogList.subList(head, tail));
-            } catch (IllegalArgumentException illegalArgumentException) {
-                respDataDto = respDataDto.setResult("fail")
-                        .setMessage("page quantity too big");
-            }
-
+            List<ChatLog> chatLogList = chatLogSaver.getChatLogList();
+            respDataDto = respDataDto.setPage(chatLogList.size()/onePageQuantity)
+                    .setData(PageListUtil.getNPage(page, onePageQuantity, chatLogList));
         } catch (Exception e) {
             respDataDto = respDataDto.setResult("fail")
                     .setMessage(e.toString());
@@ -55,6 +47,8 @@ public class ChatLogService {
 
         return respDataDto;
     }
+
+
 
 //    public RespDataDto findByJoinUser(String joinUser, Integer page) {
 //        RespDataDto respDto = new RespDataDto().setResult("success");
