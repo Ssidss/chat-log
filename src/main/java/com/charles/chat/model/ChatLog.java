@@ -1,5 +1,8 @@
 package com.charles.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -16,26 +19,33 @@ public class ChatLog extends Object{
 //    private Long id;
 
     @Column(name = "user_name")
+    @JsonProperty("user_name")
     private String userName;
 
     @Column(columnDefinition = "text")
     private String message;
 
     @Column(name = "send_at")
+    @JsonProperty("send_at")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private Date sendAt;
 
     @Column(name = "content_type") // phone, sticker
+    @JsonProperty("content_type")
     private String contentType;
 
     @Column(name = "is_high_line")
+    @JsonProperty("is_high_line")
     private boolean isHighLine;
 
     private String platform;
 
     @Column(name = "join_user")
+    @JsonProperty("join_user")
     private String joinUser;
 
     @Column(name = "phone_call_time")
+    @JsonProperty("phone_call_time")
     private Integer phoneCallTime;
 
 //    public Long getId() {

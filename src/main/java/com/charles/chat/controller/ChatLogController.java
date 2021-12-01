@@ -33,9 +33,10 @@ public class ChatLogController {
 
     @GetMapping("")
     public RespDataDto getChat(@RequestParam(required = false, defaultValue = "0") Integer page,
+                               @RequestParam String hash,
                                @RequestParam(required = false, defaultValue = "", name = "start_at") String startAt,
                                @RequestParam(required = false, defaultValue = "", name = "end_at") String endAt) {
-        return this.chatLogService.getChat(page, startAt, endAt);
+        return this.chatLogService.getChat(hash, page, startAt, endAt);
     }
 
     @PostMapping("")

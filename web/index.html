@@ -12,26 +12,31 @@
         </div-->
         <div id = "chat-field" class = "chat-field" style="width:100%">
             <div>
+                <input type="password" value="" v-model="hash" placeholder="輸入上傳密碼"/>
                 <button v-on:click="getChatLog(page)">跳到</button>
                 <input type="number" value="1" v-model="page"/>
+                <input type="text" v-model="rightUser"/>
             </div>
             <div>
-                {{pageRanges}}
                 <table>
                     <thead>
                     </thead>
                     <tbody>
+                        <tr>
+                            <td><button>{{user1}}</button></td>
+                            <td><button>{{user2}}</button></td>
+                        </tr>
                         <tr v-for="(chatLog, chatIdx) in chatLogs" :key="chatIdx">
-                            <td v-if="chatLog.userName === user1" align="right">{{chatLog.message}}</td>
-                            <td v-else>{{chatLog.userName}}: {{chatLog.message}} </td>
-                            <td>{{formatDateTime(chatLog.sendAt)}}</td>
+                            <td v-if="chatLog.user_name === rightUser" align="right">{{chatLog.message}}</td>
+                            <td v-else>{{chatLog.user_name}}: {{chatLog.message}} </td>
+                            <td>{{formatDateTime(chatLog.send_at)}}</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr style="heigh: -1">
                             <td><button v-on:click="previousPage()">上一頁</button></td>
                             <td v-for="(pg, pIdx) in pageRanges" :key="pg">
-                                <button>{{pg}}</button>
+                                <button v-on:click="getChatLog(page)">{{pg}}</button>
                             </td>
                             <td><button v-on:click="nextPage()">下一頁</button></td>
                         </tr>
@@ -49,6 +54,7 @@
       var app = new Vue({
         el: '#app',
         data: {
+            hash: "",
             pg: 0,
             page: 1,
             maxPage: 0,
@@ -88,13 +94,12 @@
                 "total_miss_call": 13,
                 "total_phone_call_time": "140:47:41"
             },
-            user1: "劉書銓",
-            user2: "鋁箔",
+            rightUser: "",
+            leftUser: "",
+            user1: "",
+            user2: "",
         },
         methods: {
-            isShe: async function(name) {
-                return name === "討厭鬼";
-            },
             uploadFile: async function() {
                 var formdata = new FormData();
                 formdata.append("file", fileInput.files[0], "chat.txt");
@@ -125,14 +130,14 @@
                     redirect: 'follow'
                   };
                   
-                fetch("http://127.0.0.1:5920/api/chat/chat/log?page="+page, requestOptions)
+                fetch("http://127.0.0.1:5920/api/chat/chat/log?page="+page+
+                "&hash="+that.hash, requestOptions)
                     .then(response => response.text())
                     .then(function(resp){
                         let res = JSON.parse(resp)
                         that.chatLogs = res.data;
                         that.maxPage = res.page;
                         console.log(that.chatLogs);
-                        
                     })
                     .catch(error => console.log('error', error));
                 this.pageRanges = [];
@@ -141,6 +146,7 @@
                     this.pageRanges.push(i);
                     console.log(i);
                 }
+                // this.user1 = this.chatLogs[0].user_name;
                 this.$forceUpdate();
                 
             },

@@ -5,6 +5,7 @@ public class RespDataDto<T> {
     private String result;
     private String message;
     private Integer page;
+    private String hash;
     private T data;
 
     public String getMessage() {
@@ -40,6 +41,15 @@ public class RespDataDto<T> {
 
     public RespDataDto<T> setData(T data) {
         this.data = data;
+        return this;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public RespDataDto<T> setHash(String hash) {
+        this.hash = hash;
         return this;
     }
 }

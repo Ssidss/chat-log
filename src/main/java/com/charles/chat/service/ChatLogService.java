@@ -7,6 +7,7 @@ import com.charles.chat.helper.ChatLogSummary;
 import com.charles.chat.helper.ChatTextReader;
 import com.charles.chat.model.ChatLog;
 //import com.charles.chat.repository.ChatLogRepository;
+import com.charles.util.hash.ShaHashUtil;
 import com.charles.util.pagelist.PageListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,14 +31,16 @@ public class ChatLogService {
 
     public RespDto<?> saveFile(String joinUser, MultipartFile file) throws IOException {
         RespDto<Object> respDto = new RespDto<>().setResult("success");
-        chatLogSaver.setChatLogList(new ChatTextReader(file.getInputStream(), "line").getChatLogList());
-        return respDto.setData(ChatLogSummary.summary(chatLogSaver.getChatLogList()));
+        joinUser = ShaHashUtil.getSHA256Str(joinUser);
+        chatLogSaver.setChatLogList(joinUser, new ChatTextReader(file.getInputStream(), "line").getChatLogList());
+        return respDto.setData(ChatLogSummary.summary(chatLogSaver.getChatLogList(joinUser)))
+                .setMessage(joinUser);
     }
 
-    public RespDataDto<?> getChat(Integer page, String startAt, String endAt) {
+    public RespDataDto<?> getChat(String hash, Integer page, String startAt, String endAt) {
         RespDataDto<Object> respDataDto = new RespDataDto<>().setResult("success");
         try {
-            List<ChatLog> chatLogList = chatLogSaver.getChatLogList();
+            List<ChatLog> chatLogList = chatLogSaver.getChatLogList(hash);
             respDataDto = respDataDto.setPage(chatLogList.size()/onePageQuantity)
                     .setData(PageListUtil.getNPage(page, onePageQuantity, chatLogList));
         } catch (Exception e) {
@@ -47,8 +50,6 @@ public class ChatLogService {
 
         return respDataDto;
     }
-
-
 
 //    public RespDataDto findByJoinUser(String joinUser, Integer page) {
 //        RespDataDto respDto = new RespDataDto().setResult("success");

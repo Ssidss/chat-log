@@ -3,14 +3,16 @@ package com.charles.chat.helper;
 import com.charles.chat.dto.chat.ChatSum;
 import com.charles.chat.model.ChatLog;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 public class ChatLogSaver {
 
     private static ChatLogSaver instance = new ChatLogSaver();
 
-    private List<ChatLog> chatLogList;
+    private Map<String, List<ChatLog>> chatLogList = new HashMap<>();
 
     private ChatSum chatSum;
 
@@ -20,12 +22,12 @@ public class ChatLogSaver {
         return instance;
     }
 
-    public List<ChatLog> getChatLogList() {
-        return chatLogList;
+    public List<ChatLog> getChatLogList(String key) {
+        return chatLogList.get(key);
     }
 
-    public ChatLogSaver setChatLogList(List<ChatLog> chatLogList) {
-        this.chatLogList = chatLogList;
+    public ChatLogSaver setChatLogList(String key, List<ChatLog> chatLogList) {
+        this.chatLogList.put(key, chatLogList);
         return this;
     }
 
@@ -39,7 +41,7 @@ public class ChatLogSaver {
     }
 
     public void cleanALl() {
-        this.chatLogList = new Vector<>();
+        this.chatLogList = new HashMap<>();
         this.chatSum = null;
     }
 }
