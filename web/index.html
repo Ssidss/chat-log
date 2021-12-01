@@ -54,7 +54,8 @@
       var app = new Vue({
         el: '#app',
         data: {
-            serverUrl: "https://adapi.isp99.com:8443/api/chat",
+            //serverUrl: "https://adapi.isp99.com:8443/api/chat",
+            serverUrl: "http://127.0.0.1:5920/api/chat",
             hash: "",
             pg: 0,
             page: 1,
@@ -105,14 +106,14 @@
                 var formdata = new FormData();
                 formdata.append("file", fileInput.files[0], "chat.txt");
                 formdata.append("join_user", "charles_remi");
-                
+                let that = this;
                 var requestOptions = {
                     method: 'POST',
                     body: formdata,
                     redirect: 'follow'
                 };
                 
-                fetch(serverUrl+"/chat/log", requestOptions)
+                fetch(that.serverUrl+"/chat/log", requestOptions)
                     .then(response => response.text())
                     .then(result => console.log(result))
                     .catch(error => console.log('error', error));
@@ -131,7 +132,7 @@
                     redirect: 'follow'
                   };
                   
-                fetch(serverUrl+"/chat/log?page="+page+
+                fetch(that.serverUrl+"/chat/log?page="+page+
                 "&hash="+that.hash, requestOptions)
                     .then(response => response.text())
                     .then(function(resp){
@@ -150,6 +151,23 @@
                 // this.user1 = this.chatLogs[0].user_name;
                 this.$forceUpdate();
                 
+            },
+            getUrlHash() {
+                console.log("init");
+                let uri = window.location.href.split('?');
+                if(uri.length == 2) {
+                  let vars = uri[1].split('&');
+                  let getVars = {};
+                  let tmp = '';
+                  vars.forEach(function(v) {
+                    tmp = v.split('=');
+                    if(tmp.length == 2)
+                      getVars[tmp[0]] = tmp[1];
+                  });
+                  console.log(getVars);
+                  this.hash=getVars["hash"];
+                  // do 
+                }
             },
             formatTime(value) {
                 if (value) { 
@@ -170,6 +188,9 @@
         },
         watch: {
         },
+        mounted: async function() {
+            this.getUrlHash();
+        }
       })
     </script>
   </body>
