@@ -54,6 +54,7 @@
       var app = new Vue({
         el: '#app',
         data: {
+            serverUrl: "https://adapi.isp99.com:8443/api/chat",
             hash: "",
             pg: 0,
             page: 1,
@@ -111,7 +112,7 @@
                     redirect: 'follow'
                 };
                 
-                fetch("http://127.0.0.1:5920/api/chat/chat/log", requestOptions)
+                fetch(serverUrl+"/chat/log", requestOptions)
                     .then(response => response.text())
                     .then(result => console.log(result))
                     .catch(error => console.log('error', error));
@@ -130,7 +131,7 @@
                     redirect: 'follow'
                   };
                   
-                fetch("http://127.0.0.1:5920/api/chat/chat/log?page="+page+
+                fetch(serverUrl+"/chat/log?page="+page+
                 "&hash="+that.hash, requestOptions)
                     .then(response => response.text())
                     .then(function(resp){
