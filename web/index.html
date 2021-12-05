@@ -1,7 +1,16 @@
 <html>
   <head>
-      <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <title>LineChatRecord</title>
+    <style>
+        body {
+          background-color: linen;
+        }
+        
+        .sent-at {
+            font-size:12px;
+        }
+    </style>
   </head>
 
   <body>  
@@ -10,34 +19,38 @@
             <h2>上傳檔案</h2>
             <button>送出</button>
         </div-->
-        <div id = "chat-field" class = "chat-field" style="width:100%">
+        <div v-show="!isAuth">
+            <input type="password" value="" v-model="hash" placeholder="輸入上傳密碼"/>
+            <button v-on:click="checkAuth()">GOGO</button>
+        </div>
+        <div id = "chat-field" class = "chat-field" style="width:100%" v-show="isAuth">
             <div>
-                <input type="password" value="" v-model="hash" placeholder="輸入上傳密碼"/>
                 <button v-on:click="getChatLog(page)">跳到</button>
+                <span>
                 <input type="number" value="1" v-model="page"/>
-                <input type="text" v-model="rightUser"/>
+                / {{maxPage}} 頁
+                </span>
+                <span>
+                    視角: 
+                    <select v-model="selUser">
+                        <option v-for="(usr, uIdx) in chatUsers" v-value="usr">{{usr}}</option>
+                    </select>
+                </span>
             </div>
             <div>
                 <table>
                     <thead>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><button>{{user1}}</button></td>
-                            <td><button>{{user2}}</button></td>
-                        </tr>
                         <tr v-for="(chatLog, chatIdx) in chatLogs" :key="chatIdx">
                             <td v-if="chatLog.user_name === rightUser" align="right">{{chatLog.message}}</td>
                             <td v-else>{{chatLog.user_name}}: {{chatLog.message}} </td>
-                            <td>{{formatDateTime(chatLog.send_at)}}</td>
+                            <td class="sent-at">{{formatDateTime(chatLog.send_at)}}</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr style="heigh: -1">
                             <td><button v-on:click="previousPage()">上一頁</button></td>
-                            <td v-for="(pg, pIdx) in pageRanges" :key="pg">
-                                <button v-on:click="getChatLog(page)">{{pg}}</button>
-                            </td>
                             <td><button v-on:click="nextPage()">下一頁</button></td>
                         </tr>
                     </tfoot>
@@ -59,6 +72,7 @@
             hash: "",
             pg: 0,
             page: 1,
+            isAuth: false,
             maxPage: 0,
             pageRanges: [],
             currentDate: "",
@@ -96,8 +110,9 @@
                 "total_miss_call": 13,
                 "total_phone_call_time": "140:47:41"
             },
+            chatUsers: [],
+            selUser: "",
             rightUser: "",
-            leftUser: "",
             user1: "",
             user2: "",
         },
@@ -119,10 +134,12 @@
                     .catch(error => console.log('error', error));
             },   
             previousPage: async function() {
-                this.getChatLog(this.selPage - 1);
+                this.getChatLog(parseInt(this.selPage) - 1);
+                this.page = this.selPage - 1;
             },
             nextPage: async function() {
-                this.getChatLog(this.selPage + 1);
+                this.getChatLog(parseInt(this.selPage) + 1);
+                this.page = this.selPage + 1;
             },
             getChatLog: async function(page) {
                 let that = this;
@@ -130,8 +147,7 @@
                 var requestOptions = {
                     method: 'GET',
                     redirect: 'follow'
-                  };
-                  
+                };
                 fetch(that.serverUrl+"/chat/log?page="+page+
                 "&hash="+that.hash, requestOptions)
                     .then(response => response.text())
@@ -148,9 +164,31 @@
                     this.pageRanges.push(i);
                     console.log(i);
                 }
-                // this.user1 = this.chatLogs[0].user_name;
+                document.body.scrollTop = 0
+                document.documentElement.scrollTop = 0
+                
                 this.$forceUpdate();
                 
+            },
+            checkAuth: async function() {
+                let that = this;
+                var requestOptions = {
+                    method: 'GET',
+                    redirect: 'follow'
+                };
+                fetch(that.serverUrl+"/chat/log/auth?hash="+that.hash, requestOptions)
+                    .then(response => response.text())
+                    .then(function(resp){
+                        let res = JSON.parse(resp)
+                        that.isAuth = res.result === "success";
+                        if (that.isAuth) {
+                            that.chatUsers = res.data;
+                            console.log(res.data);
+                        }
+                    })
+                    .catch(error => console.log('error', error));
+                // this.user1 = this.chatLogs[0].user_name;
+                this.$forceUpdate();
             },
             getUrlHash() {
                 console.log("init");
@@ -169,6 +207,7 @@
                   // do 
                 }
             },
+            
             formatTime(value) {
                 if (value) { 
                     return moment(String(value)).format('HH:mm')
@@ -187,6 +226,12 @@
 
         },
         watch: {
+            selUser: function() {
+                this.rightUser = this.selUser;
+                console.log(this.selUser);
+                console.log(this.rightUser);
+                this.$forceUpdate();
+            }
         },
         mounted: async function() {
             this.getUrlHash();

@@ -45,7 +45,7 @@ public class ChatTextReader {
             while (myReader.hasNextLine()) {
                 i++;
                 phoneCallTime = 0;
-                System.out.println("saving line: " + i);
+//                System.out.println("saving line: " + i);
                 String data = myReader.nextLine(); // 會把最後的換行拿掉
 //                System.out.print(data);
                 if (data.matches("20[0-9][0-9].*")) {

@@ -31,6 +31,11 @@ public class ChatLogController {
 //        return chatLogService.findByJoinUser(joinUser, page);
 //    }
 
+    @GetMapping("/auth")
+    public RespDto isHasChat(@RequestParam String hash) {
+        return this.chatLogService.isHasChat(hash);
+    }
+
     @GetMapping("")
     public RespDataDto getChat(@RequestParam(required = false, defaultValue = "0") Integer page,
                                @RequestParam String hash,
