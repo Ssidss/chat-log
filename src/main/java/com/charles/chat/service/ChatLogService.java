@@ -77,26 +77,5 @@ public class ChatLogService {
         return respDto;
     }
 
-//    public RespDataDto findByJoinUser(String joinUser, Integer page) {
-//        RespDataDto respDto = new RespDataDto().setResult("success");
-//        List<ChatLog> chatLogList;
-//        if (chatLogCache.containsKey(joinUser)) {
-//            chatLogList = chatLogCache.get(joinUser);
-//        } else {
-////            chatLogList = chatLogRepository.findByJoinUserOrderById(joinUser);
-//            chatLogCache.put(joinUser, chatLogList);
-//        }
-//        respDto.setPage(chatLogList.size()/onePageQuantity);
-//        int head = page * onePageQuantity;
-//        int tail = Math.min(chatLogList.size(), (head + onePageQuantity));
-//        try {
-//            respDto = respDto.setData(chatLogList.subList(head, tail));
-//        } catch (IllegalArgumentException illegalArgumentException) {
-//            respDto = respDto.setResult("fail")
-//                    .setMessage("page quantity too big");
-//        }
-//
-//        return respDto;
-//    }
 
 }

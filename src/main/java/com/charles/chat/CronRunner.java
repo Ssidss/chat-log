@@ -15,7 +15,7 @@ public class CronRunner implements CommandLineRunner {
     @Override
     public void run(String ... args) throws Exception {
         // 要跑的內容在這
-        this.scheduler.startCron(new CleanChatLogTask(),
-                "0 0 1 * * ?", "clean");
+//        this.scheduler.startCron(new CleanChatLogTask(),
+//                "0 0 1 * * ?", "clean");
     }
 }

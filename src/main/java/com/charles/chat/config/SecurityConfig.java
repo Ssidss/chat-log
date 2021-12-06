@@ -33,13 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             System.out.println(request.getRequestURI());
             filterChain.doFilter(request, response);
-//            try {
-//
-//            } catch (Exception e) {
-//                response.setContentType("application/json;charset=UTF-8");
-//                response.setStatus(401);
-//                response.getWriter().write("{\"result\": 0, \"message\": \"not authorized api request\"}");
-//            }
+
         }
 
     }
