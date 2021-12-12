@@ -2,10 +2,7 @@ package com.charles.chat;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class TextTest {
 
@@ -35,6 +32,27 @@ public class TextTest {
         String[] phoneTimes = phoneTime.split(":");
         List<String> times = Arrays.stream(phoneTimes).toList();
 
+    }
+
+    @Test
+    public void dateTest() {
+        Date date = new Date();
+        System.out.println(date);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int years = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        calendar.set(years, month, day, 0, 0);
+        Date startDate = calendar.getTime();
+        System.out.println(startDate);
+        calendar.add(Calendar.DATE, +1);
+        Date endDate = calendar.getTime();
+        System.out.println(endDate);
+        calendar.add(Calendar.DATE, +1);
+        endDate = calendar.getTime();
+        System.out.println(startDate);
+        System.out.println(endDate);
     }
 
 }

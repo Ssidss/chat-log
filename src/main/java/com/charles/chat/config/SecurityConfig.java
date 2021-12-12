@@ -1,5 +1,8 @@
 package com.charles.chat.config;
 
+import com.charles.chat.helper.ApiLogSaver;
+import com.charles.chat.helper.ChatLogSummary;
+import com.charles.chat.model.ApiLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,9 +15,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
 
 
     @Override
@@ -27,11 +35,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private static class AuthFilter extends OncePerRequestFilter {
+        ApiLogSaver apiLogSaver = ApiLogSaver.getInstance();
+        public AuthFilter() {
 
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd-HH:mm");
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-            System.out.println(request.getRequestURI());
+            if (!request.getRequestURI().equals("/api/chat/api/log")) {
+                String host = request.getHeader("X-Real-IP") + ":" + request.getRemoteHost();
+                apiLogSaver.getApiLogs().add(
+                        new ApiLog()
+                                .setHost(host)
+                                .setPath(request.getRequestURI())
+                                .setAccessAt(sdf.format(new Date()))
+                                .setQuery(request.getQueryString())
+                );
+            }
             filterChain.doFilter(request, response);
 
         }

@@ -50,6 +50,11 @@ public class ChatLogController {
         return chatLogService.saveFile(joinUser, file);
     }
 
+    @GetMapping("/day_page")
+    public RespDto getMonthPage(@RequestParam(name = "hash") String hash) {
+        return chatLogService.getDayPage(hash);
+    }
+
     @GetMapping("/delete")
     public String delete() {
         ChatLogSaver.getInstance().cleanALl();

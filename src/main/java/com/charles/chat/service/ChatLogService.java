@@ -3,6 +3,7 @@ package com.charles.chat.service;
 import com.charles.chat.dto.RespDataDto;
 import com.charles.chat.dto.RespDto;
 import com.charles.chat.dto.chat.ChatSum;
+import com.charles.chat.dto.chat.DailySum;
 import com.charles.chat.helper.ChatLogSaver;
 import com.charles.chat.helper.ChatLogSummary;
 import com.charles.chat.helper.ChatTextReader;
@@ -67,6 +68,13 @@ public class ChatLogService {
 
         return respDataDto;
     }
+
+    public RespDto<?> getDayPage(String hash) {
+        RespDto respDto = new RespDto();
+        return respDto.setResult("success").setData(ChatLogSummary.dailySum(chatLogSaver.getChatLogList(hash)));
+    }
+
+
 
     public RespDto<?> getMonthSummary(String hash) {
         RespDto respDto = new RespDto();

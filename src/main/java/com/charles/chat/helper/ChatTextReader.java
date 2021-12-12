@@ -37,6 +37,7 @@ public class ChatTextReader {
             String tmpTime = "";
             String contentType = "";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd-HH:mm");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC+0"));
             String[] tmpString;
             String tmpChat = "";
             Integer phoneCallTime = 0;

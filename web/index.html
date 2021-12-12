@@ -43,7 +43,7 @@
             <div>
                 <table class="table">
                     <thead>
-                        <tr style="heigh: -1">
+                        <tr>
                             <td><button v-on:click="previousPage()">上一頁</button></td>
                             <td><button v-on:click="nextPage()">下一頁</button></td>
                         </tr>
@@ -56,7 +56,7 @@
                         </tr>
                     </tbody>
                     <tfoot>
-                        <tr style="heigh: -1">
+                        <tr>
                             <td><button v-on:click="previousPage()">上一頁</button></td>
                             <td><button v-on:click="nextPage()">下一頁</button></td>
                         </tr>
@@ -65,6 +65,12 @@
             </div>
         </div>
         <div id = "summary-field">
+            <table>
+                <tr v-for="(item, key, index) in dailyPages" :key="index">
+                    <td>{{formatDate(key)}}</td>
+                    <td><button v-on:click="getChatLog(item.page)">{{item.page}}</button></td>
+                </tr>
+            </table>
         </div>
     </div>
     <!-- body end -->
@@ -78,8 +84,8 @@
       var app = new Vue({
         el: '#app',
         data: {
-            serverUrl: "https://adapi.isp99.com:8443/api/chat",
-            //serverUrl: "http://127.0.0.1:5920/api/chat",
+            // serverUrl: "https://adapi.isp99.com:8443/api/chat",
+            serverUrl: "http://127.0.0.1:5920/api/chat",
             hash: "",
             pg: 0,
             page: 1,
@@ -121,6 +127,13 @@
                 "total_miss_call": 13,
                 "total_phone_call_time": "140:47:41"
             },
+            dailyPages: {
+                "2021-07-19T16:00:00.000+00:00": {
+                    "page": 308,
+                    "startIdx": 30844,
+                    "chat_sum": null
+                },
+            },
             chatUsers: [],
             selUser: "",
             rightUser: "",
@@ -155,6 +168,7 @@
             getChatLog: async function(page) {
                 let that = this;
                 that.selPage = page;
+                that.page = page;
                 var requestOptions = {
                     method: 'GET',
                     redirect: 'follow'
@@ -196,6 +210,32 @@
                             that.chatUsers = res.data;
                             console.log(res.data);
                         }
+                    })
+                    .catch(error => console.log('error', error));
+                // this.user1 = this.chatLogs[0].user_name;
+                this.getDailyPage();
+                this.$forceUpdate();
+            },
+            getDailyPage: async function() {
+                let that = this;
+                var requestOptions = {
+                    method: 'GET',
+                    redirect: 'follow'
+                };
+                fetch(that.serverUrl+"/chat/log/day_page?hash="+that.hash, requestOptions)
+                    .then(response => response.text())
+                    .then(function(resp){
+                        let res = JSON.parse(resp)
+                        that.dailyPages = res.data;
+                        const ordered = Object.keys(that.dailyPages).sort().reduce(
+                            (obj, key) => { 
+                                obj[key] = that.dailyPages[key]; 
+                                return obj;
+                            }, 
+                            {}
+                        );
+                        that.dailyPages = ordered;
+                        console.log(res.data);
                     })
                     .catch(error => console.log('error', error));
                 // this.user1 = this.chatLogs[0].user_name;
