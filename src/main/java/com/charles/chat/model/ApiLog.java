@@ -13,6 +13,8 @@ public class ApiLog {
 
     private String accessAt;
 
+    private String device;
+
     public String getHost() {
         return host;
     }
@@ -46,6 +48,15 @@ public class ApiLog {
 
     public ApiLog setAccessAt(String accessAt) {
         this.accessAt = accessAt;
+        return this;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public ApiLog setDevice(String device) {
+        this.device = device;
         return this;
     }
 }

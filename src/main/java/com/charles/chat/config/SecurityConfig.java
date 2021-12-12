@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -37,17 +38,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static class AuthFilter extends OncePerRequestFilter {
         ApiLogSaver apiLogSaver = ApiLogSaver.getInstance();
         public AuthFilter() {
-
+            this.sdf = new SimpleDateFormat("yyyy/MM/dd-HH:mm");
+//            this.sdf.setTimeZone(TimeZone.getTimeZone("UTF+8"));
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd-HH:mm");
+        SimpleDateFormat sdf;
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
             if (!request.getRequestURI().equals("/api/chat/api/log")) {
                 String host = request.getHeader("X-Real-IP") + ":" + request.getRemoteHost();
+                String agent = request.getHeader("X-User-Agent") + ":" + request.getHeader("User-Agent");
+                System.out.println(new Date());
                 apiLogSaver.getApiLogs().add(
                         new ApiLog()
                                 .setHost(host)
                                 .setPath(request.getRequestURI())
+                                .setDevice(agent)
                                 .setAccessAt(sdf.format(new Date()))
                                 .setQuery(request.getQueryString())
                 );
