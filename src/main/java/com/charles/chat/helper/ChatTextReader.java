@@ -14,10 +14,6 @@ public class ChatTextReader {
 
     private static Integer[] TIME_SECOND = {1, 60, 3600};
 
-    private static List<String> CHIN = Arrays.asList("討厭鬼");
-
-    private static List<String> YEN = Arrays.asList("鋁箔");
-
     public ChatTextReader(String filePath, String platform)  {
 
     }
@@ -37,7 +33,7 @@ public class ChatTextReader {
             String tmpTime = "";
             String contentType = "";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd-HH:mm");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC+0"));
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC+8"));
             String[] tmpString;
             String tmpChat = "";
             Integer phoneCallTime = 0;
@@ -55,10 +51,20 @@ public class ChatTextReader {
                 } else if (data.matches("[下|上]午[0-9][0-9]:[0-9][0-9].*")) {
                     tmpString = data.split("\t");
                     if (data.startsWith("上午")) {
-                        tmpTime = tmpString[0].substring(2, 7);
+                        // 上午12:59 -> 12:59
+                        if (tmpString[0].substring(2, 7).startsWith("12")){
+                            tmpTime = "00" + tmpString[0].substring(4, 7);
+                        } else {
+                            tmpTime = tmpString[0].substring(2, 7);
+                        }
                     } else {
-                        tmpTime = (Integer.valueOf(tmpString[0].substring(2,4)) + 12)
-                            + tmpString[0].substring(4, 7);
+                        // 下午 12:xx -> 00:xx
+                        if (tmpString[0].substring(2, 7).startsWith("12")) {
+                            tmpTime = tmpString[0].substring(2, 7);
+                        } else {
+                            tmpTime = (Integer.valueOf(tmpString[0].substring(2, 4)) + 12)
+                                    + tmpString[0].substring(4, 7);
+                        }
                     }
                     try {
                         chatDate = sdf.parse(tmpDate + "-" + tmpTime);
@@ -68,11 +74,11 @@ public class ChatTextReader {
                     if (tmpString.length == 2) {
                         contentType = ChatContentType.BACK;
                         tmpChat = tmpString[1];
-                        userName = tmpChat.startsWith("您") ? "鋁箔" : "討厭鬼";
+                        userName = tmpChat.startsWith("您") ? "鋁箔" : "討厭喵喵";
                         if (tmpChat.startsWith("您")) {
                             userName = "鋁箔";
                         } else {
-                            userName = "討厭鬼";
+                            userName = "討厭喵喵";
                         }
 
                     } else {

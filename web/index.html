@@ -5,14 +5,55 @@
     <style>
         .body {
           background-color: linen;
+          width:100%
+        }
+        .container {
+            width:inherit;
+            max-width: 100%;
+            min-width: 100%;
+        }
+        .date-picker {
+            float: right;
+        }
+        .page-bar {
+            float:left;
+        }
+        .chat-table-div {
+            table-layout: fixed;
+            width:100%;
+            overflow-x:auto;
+            height:80%;
+            overflow-y:auto
+            
+        }
+        .chat-table {
+            table-layout: fixed;
+            width:100%;
+            overflow-x:auto;
+            height:80%;
+            overflow-y:auto
+        }
+        .chat-table thead {
+            background-color: linen;
+            position: sticky;
+            top: 0;
+            font-weight: 400;
+            padding: 0.5em;
+        }
+        .chat-table tbody tr {
+            overflow-x:auto;
+            overflow-y:auto;
+            font-size:16px;
+        }
+        .chat-table thead tr td:first-child {
+            max-width: 85%;
+            width: 85%;
+        }
+        .chat-table thead tr td:second-child {
+            max-width: 15%;
+            width: 15%;
         }
         
-        .sent-at {
-            font-size:12px;
-        }
-        .chat-msg {
-            width: 80%;
-        }
     </style>
   </head>
 
@@ -22,33 +63,48 @@
             <h2>上傳檔案</h2>
             <button>送出</button>
         </div-->
+        
+        
         <div v-show="!isAuth">
             <input type="password" value="" v-model="hash" placeholder="輸入上傳密碼"/>
             <button v-on:click="checkAuth()">GOGO</button>
         </div>
         <div id = "chat-field" class = "chat-field" style="width:100%" v-show="isAuth">
-            <div>
-                <button v-on:click="getChatLog(page)">跳到</button>
-                <span>
-                <input type="number" value="1" v-model="page"/>
-                / {{maxPage}} 頁
-                </span>
-                <span>
-                    視角: 
-                    <select v-model="selUser">
-                        <option v-for="(usr, uIdx) in chatUsers" v-value="usr">{{usr}}</option>
-                    </select>
-                </span>
+            <div class = "tool-bar">
+                <div class="date-picker">
+                    <input type="date" id="check-date" name="check-date" v-model="pickedDate">
+                    <!--v-date-picker v-model="pickedDate" 
+                    :min-date = "firstDate" 
+                    :max-date = "lastDate"
+                    class="mt-4" 
+                    ></v-date-picker>
+                    <input type="date"-->
+                    <span>如果沒反應就是那天沒有對話</span>
+                </div>
+                <div class="page-bar">
+                    <!--button v-on:click="dateJump">跳到日期</button-->
+                    <button v-on:click="getChatLog(page)">跳到</button>
+                    <span>
+                    <input type="number" value="1" v-model="page"/>
+                    / {{maxPage}} 頁
+                    </span>
+                    <span>
+                        視角: 
+                        <select v-model="selUser">
+                            <option v-for="(usr, uIdx) in chatUsers" v-value="usr">{{usr}}</option>
+                        </select>
+                    </span>
+                </div>
             </div>
-            <div>
-                <table class="table">
+            <div class="chat-table-div" id = "chat-table">
+                <table class="chat-table">
                     <thead>
                         <tr>
                             <td><button v-on:click="previousPage()">上一頁</button></td>
                             <td><button v-on:click="nextPage()">下一頁</button></td>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="border:3px #cccccc solid;" >
                         <tr v-for="(chatLog, chatIdx) in chatLogs" :key="chatIdx">
                             <td v-if="chatLog.user_name === rightUser" align="right" class = "chat-msg">{{chatLog.message}}</td>
                             <td v-else class = "chat-msg">{{chatLog.user_name}}: {{chatLog.message}} </td>
@@ -56,22 +112,20 @@
                         </tr>
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <td><button v-on:click="previousPage()">上一頁</button></td>
-                            <td><button v-on:click="nextPage()">下一頁</button></td>
-                        </tr>
+                        
                     </tfoot>
                 </table>
             </div>
         </div>
-        <div id = "summary-field">
+        
+        <!-- div id = "summary-field">
             <table>
                 <tr v-for="(item, key, index) in dailyPages" :key="index">
                     <td>{{formatDate(key)}}</td>
                     <td><button v-on:click="getChatLog(item.page)">{{item.page}}</button></td>
                 </tr>
             </table>
-        </div>
+        </div-- >
     </div>
     <!-- body end -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -80,6 +134,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Link VCalendar Javascript (Plugin automatically installed) -->
+    <script src='https://unpkg.com/v-calendar'></script>
+
     <script>
       var app = new Vue({
         el: '#app',
@@ -88,6 +145,7 @@
             //serverUrl: "http://127.0.0.1:5920/api/chat",
             hash: "",
             pg: 0,
+            pickedDate: "",
             page: 1,
             isAuth: false,
             maxPage: 0,
@@ -128,17 +186,20 @@
                 "total_phone_call_time": "140:47:41"
             },
             dailyPages: {
-                "2021-07-19T16:00:00.000+00:00": {
+                "2021-07-19": {
                     "page": 308,
                     "startIdx": 30844,
                     "chat_sum": null
                 },
             },
+            chatDates: new Set(),
             chatUsers: [],
             selUser: "",
             rightUser: "",
             user1: "",
             user2: "",
+            firstDate: "",
+            lastDate: "",
         },
         methods: {
             uploadFile: async function() {
@@ -159,11 +220,13 @@
             },   
             previousPage: async function() {
                 this.getChatLog(parseInt(this.selPage) - 1);
-                this.page = this.selPage - 1;
+                //this.page = this.selPage - 1;
+                document.getElementById('chat-table').scrollTop = 999999
             },
             nextPage: async function() {
                 this.getChatLog(parseInt(this.selPage) + 1);
-                this.page = this.selPage + 1;
+                document.getElementById('chat-table').scrollTop = 0
+                //this.page = this.selPage + 1;
             },
             getChatLog: async function(page) {
                 let that = this;
@@ -189,9 +252,6 @@
                     this.pageRanges.push(i);
                     console.log(i);
                 }
-                document.body.scrollTop = 0
-                document.documentElement.scrollTop = 0
-                
                 this.$forceUpdate();
                 
             },
@@ -209,6 +269,13 @@
                         if (that.isAuth) {
                             that.chatUsers = res.data;
                             console.log(res.data);
+                            that.rightUser = that.chatUsers[1];
+                            let urlParams = new URLSearchParams(window.location.search);
+                            if (urlParams.has('init_page')) {
+                                that.getChatLog(parseInt(urlParams.get('init_page')));
+                            } else {
+                                that.getChatLog(0);
+                            }
                         }
                     })
                     .catch(error => console.log('error', error));
@@ -226,7 +293,9 @@
                     .then(response => response.text())
                     .then(function(resp){
                         let res = JSON.parse(resp)
-                        that.dailyPages = res.data;
+                        that.dailyPages = res.data.datas;
+                        that.firstDate = res.data.first_date;
+                        that.lastDate = res.data.last_date;
                         const ordered = Object.keys(that.dailyPages).sort().reduce(
                             (obj, key) => { 
                                 obj[key] = that.dailyPages[key]; 
@@ -236,12 +305,22 @@
                         );
                         that.dailyPages = ordered;
                         console.log(res.data);
+                        that.chatDates = new Set(Object.keys(that.dailyPages));
                     })
                     .catch(error => console.log('error', error));
                 // this.user1 = this.chatLogs[0].user_name;
+                console.log();
                 this.$forceUpdate();
             },
-            
+            dateJump() {
+                var selDate = this.pickedDate;//this.formatDate(this.pickedDate);
+                if (selDate != undefined) {
+                    console.log(this.dailyPages[selDate]);
+                    if (this.chatDates.has(selDate)) {
+                        this.getChatLog(this.dailyPages[selDate].page);
+                    }
+                }
+            },
             formatTime(value) {
                 if (value) { 
                     return moment(String(value)).format('HH:mm')
@@ -257,21 +336,27 @@
                     return moment(String(value)).format('yyyy-MM-DD HH:mm')
                 }
             },
+            allowedDates(val) {
+                return that.chatDates.has(this.formatDate(val));
+            },
             initPage() {
                 let urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.has('hash')) {
                     this.hash = urlParams.get('hash');
                     this.checkAuth();
+                    this.$forceUpdate();
                 }
+                
             }
 
         },
         watch: {
             selUser: function() {
                 this.rightUser = this.selUser;
-                console.log(this.selUser);
-                console.log(this.rightUser);
                 this.$forceUpdate();
+            },
+            pickedDate: function() {
+                this.dateJump();
             }
         },
         mounted: async function() {

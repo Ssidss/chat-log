@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -28,6 +29,7 @@ public class ChatLogService {
     private ChatLogSaver chatLogSaver = ChatLogSaver.getInstance();
 
     private static int onePageQuantity = 100;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     public RespDto<?> isHasChat(String hash) {
         RespDto respDto = new RespDto().setResult("success");
@@ -57,8 +59,10 @@ public class ChatLogService {
 
     public RespDataDto<?> getChat(String hash, Integer page, String startAt, String endAt) {
         RespDataDto<Object> respDataDto = new RespDataDto<>().setResult("success");
+        System.out.println();
         try {
             List<ChatLog> chatLogList = chatLogSaver.getChatLogList(hash);
+//            System.out.println(chatLogList.get(page).getSendAt());
             respDataDto = respDataDto.setPage(chatLogList.size()/onePageQuantity)
                     .setData(PageListUtil.getNPage(page, onePageQuantity, chatLogList));
         } catch (Exception e) {
@@ -71,7 +75,11 @@ public class ChatLogService {
 
     public RespDto<?> getDayPage(String hash) {
         RespDto respDto = new RespDto();
-        return respDto.setResult("success").setData(ChatLogSummary.dailySum(chatLogSaver.getChatLogList(hash)));
+        Map<String, Object> res = new HashMap<>();
+        res.put("datas", ChatLogSummary.dailySum(chatLogSaver.getChatLogList(hash)));
+        res.put("first_date", sdf.format(chatLogSaver.getChatLogList(hash).get(0).getSendAt()));
+        res.put("last_date", sdf.format(chatLogSaver.getChatLogList(hash).get(chatLogSaver.getChatLogList(hash).size()-1).getSendAt()));
+        return respDto.setResult("success").setData(res);
     }
 
 

@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             if (!request.getRequestURI().equals("/api/chat/api/log")) {
                 String host = request.getHeader("X-Real-IP") + ":" + request.getRemoteHost();
                 String agent = request.getHeader("X-User-Agent") + ":" + request.getHeader("User-Agent");
-                System.out.println(new Date());
+//                System.out.println(new Date());
                 apiLogSaver.getApiLogs().add(
                         new ApiLog()
                                 .setHost(host)

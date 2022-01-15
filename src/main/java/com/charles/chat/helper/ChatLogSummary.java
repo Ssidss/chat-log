@@ -6,31 +6,41 @@ import com.charles.chat.dto.chat.DailySum;
 import com.charles.chat.model.ChatLog;
 import com.charles.util.time.SecondUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ChatLogSummary {
 
-    public static Map<Date, DailySum> dailySum(List<ChatLog> chatLogList) {
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+    public static Map<String, DailySum> dailySum(List<ChatLog> chatLogList) {
         // init daily
         Date date = chatLogList.get(0).getSendAt();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC+8"));
         int years = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-//        calendar.setTimeZone(TimeZone.getTimeZone("UTC+8"));
         calendar.set(years, month, day, 0, 0, 0);
-
         calendar.add(Calendar.DATE, -1);
         Date endDate = calendar.getTime();
-        Map<Date, DailySum> res = new HashMap<>();
+        Map<String, DailySum> res = new HashMap<>();
         for (int i = 0; i < chatLogList.size(); i++) {
 
             if (chatLogList.get(i).getSendAt().after(endDate)) {
-                calendar.add(Calendar.DATE, +1);
+                calendar.setTime(chatLogList.get(i).getSendAt());
+                years = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+                calendar.set(years, month, day, 0, 0, 0);
+
+                res.put(sdf.format(calendar.getTime()), new DailySum().setPage(i/100).setStart_idx(i));
+                calendar.add(Calendar.DATE, 1);
                 endDate = calendar.getTime();
-                res.put(endDate, new DailySum().setPage(i/100).setStart_idx(i));
+
             }
+
         }
         return res;
 
