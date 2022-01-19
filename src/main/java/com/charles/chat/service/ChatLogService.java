@@ -4,6 +4,8 @@ import com.charles.chat.dto.RespDataDto;
 import com.charles.chat.dto.RespDto;
 import com.charles.chat.dto.chat.ChatSum;
 import com.charles.chat.dto.chat.DailySum;
+import com.charles.chat.dto.chat.SearchDto;
+import com.charles.chat.dto.chat.SearchResp;
 import com.charles.chat.helper.ChatLogSaver;
 import com.charles.chat.helper.ChatLogSummary;
 import com.charles.chat.helper.ChatTextReader;
@@ -91,6 +93,28 @@ public class ChatLogService {
 
         }
         return respDto;
+    }
+
+    public RespDto<?> keyWordSearch(SearchDto searchDto) {
+        RespDto respDto = new RespDto<>().setResult("success");
+        if (searchDto.getKey_word().length() <= 1) {
+            return respDto.setResult("fail").setMessage("must input 2 words");
+        }
+        List<ChatLog> chatLogList = chatLogSaver.getChatLogList(searchDto.getHash());
+        List<SearchResp> searchResps = new ArrayList<>();
+        Map<String, Object> res = new HashMap<>();
+        for(int i = 0; i < chatLogList.size(); i++) {
+            if (chatLogList.get(i).getMessage().matches(".*"+searchDto.getKey_word()+".*")) {
+                searchResps.add(new SearchResp().setChat_log(chatLogList.get(i))
+                        .setPage(i/100));
+            }
+        }
+        if (searchResps.size() == 0) {
+            respDto = respDto.setMessage("no").setResult("fail");
+        }
+        res.put("datas", searchResps);
+        res.put("size", searchResps.size());
+        return respDto.setData(res);
     }
 
 

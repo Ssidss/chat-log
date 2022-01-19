@@ -2,6 +2,7 @@ package com.charles.chat.controller;
 
 import com.charles.chat.dto.RespDataDto;
 import com.charles.chat.dto.RespDto;
+import com.charles.chat.dto.chat.SearchDto;
 import com.charles.chat.helper.ChatLogSaver;
 import com.charles.chat.model.ChatLog;
 import com.charles.chat.service.ChatLogService;
@@ -59,5 +60,10 @@ public class ChatLogController {
     public String delete() {
         ChatLogSaver.getInstance().cleanALl();
         return "done";
+    }
+
+    @PostMapping("/search")
+    public RespDto keyWordSearch(@RequestBody SearchDto searchDto) {
+        return this.chatLogService.keyWordSearch(searchDto);
     }
 }

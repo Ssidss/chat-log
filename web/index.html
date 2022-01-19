@@ -1,38 +1,45 @@
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <title>LineChatRecord</title>
     <style>
         .body {
-          background-color: linen;
-          width:100%
+            background-color: linen;
+            width: 100%;
+            overflow-x:hidden;
         }
+
         .container {
-            width:inherit;
+            width: inherit;
             max-width: 100%;
             min-width: 100%;
         }
+
         .date-picker {
             float: right;
         }
+
         .page-bar {
-            float:left;
+            float: left;
         }
+
         .chat-table-div {
             table-layout: fixed;
-            width:100%;
-            overflow-x:auto;
-            height:80%;
-            overflow-y:auto
-            
+            width: 100%;
+            overflow-x:hidden;
+
+            height: 80%;
+            overflow-y: auto
         }
+
         .chat-table {
             table-layout: fixed;
-            width:100%;
-            overflow-x:auto;
-            height:80%;
-            overflow-y:auto
+            width: 100%;
+            height: 80%;
+            overflow-y: auto
         }
+
         .chat-table thead {
             background-color: linen;
             position: sticky;
@@ -40,120 +47,301 @@
             font-weight: 400;
             padding: 0.5em;
         }
+
         .chat-table tbody tr {
-            overflow-x:auto;
-            overflow-y:auto;
-            font-size:24px;
+            overflow-y: auto;
+            font-size: 24px;
         }
+
         .chat-table thead tr td:first-child {
             max-width: 85%;
             width: 85%;
         }
+
         .chat-table thead tr td:second-child {
             max-width: 15%;
             width: 15%;
         }
-        
     </style>
-  </head>
+    <!--link rel="stylesheet" href="./static/style.css"-->
+</head>
 
-  <body class = "body">  
-    <div id = "app" class="container">
+<body class="body" >
+    <div id="app" class="flex  h-screen w-screen  items-center justify-center">
         <!--div id = "file-upload">
             <h2>上傳檔案</h2>
             <button>送出</button>
         </div-->
-        
-        
-        <div v-show="!isAuth">
-            <input type="password" value="" v-model="hash" placeholder="輸入上傳密碼"/>
-            <button v-on:click="checkAuth()">GOGO</button>
+
+        <!--Login In-->
+        <div class="flex flex-row items-center justify-center h-screen space-x-2" v-show="!isAuth">
+            <input class="border-2 border-black h-9" type="password" value="" v-model="hash" placeholder="  輸入上傳密碼" />
+            <button
+                class="py-1 px-2  bg-blue-600 hover:bg-green-500 focus:ring-blue-500 focus:ring-offset-blue-200 text-white w-auto transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-xl"
+                v-on:click="checkAuth()">GOGO</button>
         </div>
-        <div id = "chat-field" class = "chat-field" style="width:100%" v-show="isAuth">
-            <div class = "tool-bar">
-                <div class="date-picker">
-                    <input type="date" id="check-date" name="check-date" v-model="pickedDate" value="2021-10-14">
-                    <!--v-date-picker v-model="pickedDate" 
-                    :min-date = "firstDate" 
-                    :max-date = "lastDate"
-                    class="mt-4" 
-                    ></v-date-picker>
-                    <input type="date"-->
-                    <span>如果沒反應就是那天沒有對話</span>
-                </div>
-                <div class="page-bar">
-                    <!--button v-on:click="dateJump">跳到日期</button-->
-                    <button v-on:click="getChatLog(page)">跳到</button>
-                    <span>
-                    <input type="number" value="1" v-model="page"/>
-                    / {{maxPage}} 頁
-                    </span>
-                    <span>
-                        視角: 
-                        <select v-model="selUser">
-                            <option v-for="(usr, uIdx) in chatUsers" v-value="usr">{{usr}}</option>
-                        </select>
-                    </span>
+        <!-- End Login In-->
+
+
+        <div id="chat-field" class="flex flex-col  items-center bg-blue-200 rounded-3xl h-screen w-screen max-w-5xl "
+            v-show="isAuth">
+            
+            <div class="flex flex-row  w-full h-16 bg-gray-700 rounded-t-3xl p-4 space-x-3">
+                <div class=" bg-red-400 hover:bg-red-300 w-7 h-7 rounded-full"></div>
+                <div class=" bg-yellow-400 hover:bg-yellow-300 w-7 h-7 rounded-full"></div>
+                <div class=" bg-green-400 hover:bg-green-300 w-7 h-7 rounded-full"></div>
+                <div class=" font-medium text-2xl text-white hover:text-pink-400" id="header-title">{{leftUser}}</div>
+            </div>
+            
+            <div class="flex  w-full items-center justify-center border-b-2 border-gray-300">
+                <div class="flex flex-row space-x-7 w-auto my-5 justify-center  ">
+                    <div class="flex flex-col space-y-2">
+                        <div class="px-2 flex  date-picker  rounded-lg bg-gray-200  w-auto">
+                            <input class="m-1 rounded-xl border-2 border-gray-500" type="date" id="check-date"
+                                name="check-date" v-model="pickedDate" value="2021-10-14">
+                            <span class="m-1 ">如果沒反應就是那天沒有對話</span>
+                        </div>
+
+                        <div
+                            class="px-2 page-bar rounded-lg bg-gray-200 justify-center items-center flex flex-row h-auto w-auto space-x-2">
+                            <!--button v-on:click="dateJump">跳到日期</button-->
+                            <button
+                                class="px-2  bg-blue-600 hover:bg-green-500 focus:ring-blue-500 focus:ring-offset-blue-200 text-white w-auto h-auto transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-xl v-on:"
+                                click="getChatLog(page)">跳到</button>
+                            <span>
+                                <input class="w-12" type="number" value="1" v-model="page" />
+                                / {{maxPage}} 頁
+                            </span>
+                            <span>
+                                視角:
+                                <select v-model="selUser">
+                                    <option v-for="(usr, uIdx) in chatUsers" v-value="usr">{{usr}}</option>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-row   justify-center space-x-7">
+                        <button
+                            class="p-1 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100 focus:border-4 focus:border-green-300"
+                            v-on:click="previousPage()">上一頁</button>
+                        <button
+                            class="p-1 bg-transparent border-2 border-pink-500 text-pink-500 text-lg rounded-lg hover:bg-pink-500 hover:text-gray-100 focus:border-4 focus:border-pink-300"
+                            v-on:click="nextPage()">下一頁</button>
+                    </div>
+
+                    <!--小圖案-->
+                    <div class="flex flex-auto">
+                        <ul class=" w-auto flex flex-row items-center space-x-4 ">
+                            <li>
+                                <!-- 搜尋鈕 -->
+                                <p v-on:click="searchKeyWord"
+                                    class="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-400 h-10 w-10 rounded-full">
+                                    <span>
+                                        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-6 h-6"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                        <!--svg class="w-5 h-5" fill="currentColor" stroke="none" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                            </path>
+                                        </svg-->
+                                    </span>
+                                </p>
+                            </li>
+                            <!--li>
+                                <p href="#"
+                                    class="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-400 h-10 w-10 rounded-full">
+                                    <span>
+                                        <svg class="w-5 h-5" fill="currentColor" stroke="none" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                </p>
+                            </li>
+                            <li>
+                                <p href="#"
+                                    class="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-400 h-10 w-10 rounded-full">
+                                    <span>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                </p>
+                            </li-->
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div class="chat-table-div" id = "chat-table">
-                <table class="chat-table">
-                    <thead>
-                        <tr>
-                            <td><button v-on:click="previousPage()">上一頁</button></td>
-                            <td><button v-on:click="nextPage()">下一頁</button></td>
-                        </tr>
-                    </thead>
-                    <tbody style="border:3px #cccccc solid;" >
-                        <tr v-for="(chatLog, chatIdx) in chatLogs" :key="chatIdx">
-                            <td v-if="chatLog.user_name === rightUser" align="right" class = "chat-msg">{{chatLog.message}}</td>
-                            <td v-else class = "chat-msg">{{chatLog.user_name}}: {{chatLog.message}} </td>
-                            <td class="sent-at">{{formatDateTime(chatLog.send_at)}}</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        
-                    </tfoot>
-                </table>
+
+            <!--Message-->
+            <div class="h-full overflow-hidden  w-full  ">
+                <div class="h-full overflow-y-auto">
+                    <div class="grid grid-cols-12 gap-y-1 " v-for="(chatLog, chatIdx) in chatLogs" :key="chatIdx">
+
+                        <!--if-->
+                        <div class="col-start-1 col-end-13 p-3 rounded-lg" v-if="chatLog.user_name === rightUser">
+                            <div class="flex items-center justify-start flex-row-reverse">
+                                <!--div
+                                    class="flex items-center justify-center h-auto w-auto rounded-full bg-yellow-300 font-medium flex-shrink-0">
+                                    {{chatLog.user_name}}
+                                </div-->
+                                <div class="flex flex-col">
+                                    <div class="relative ml-3 text-sm bg-green-400 py-2 px-4 shadow rounded-xl">
+                                        <div>{{chatLog.message}}</div>
+                                    </div>
+                                    <div class=" text-xs bottom-0 right-0 -mb-5 mr-2 text-gray-500">
+                                        {{formatDateTime(chatLog.send_at)}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--elif-->
+                        <div v-else class="col-start-1 col-end-8 p-3 rounded-lg">
+                            <div class="flex flex-row items-center">
+                                <div
+                                    class="flex items-center justify-center h-auto w-auto rounded-full bg-pink-200 font-medium flex-shrink-0">
+                                    {{chatLog.user_name}}
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
+                                        <div>{{chatLog.message}}</div>
+                                    </div>
+                                    <div class=" text-xs bottom-0 right-0 -mb-5 mr-2 text-gray-500">
+                                        {{formatDateTime(chatLog.send_at)}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--div class="chat-table-div w-auto " id="chat-table">
+                    <table class="chat-table">
+                        <tbody style="border:3px #cccccc solid;">
+                            <tr v-for="(chatLog, chatIdx) in chatLogs" :key="chatIdx">
+                                <td v-if="chatLog.user_name === rightUser" align="right" class="chat-msg">
+                                    {{chatLog.message}}</td>
+                                <td v-else class="chat-msg">{{chatLog.user_name}}: {{chatLog.message}} </td>
+                                <td class="sent-at">{{formatDateTime(chatLog.send_at)}}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+
+                        </tfoot>
+                    </table>
+                </div-->
             </div>
-        </div>
-        
-        <!-- div id = "summary-field">
+
+            <!-- div id = "summary-field">
             <table>
                 <tr v-for="(item, key, index) in dailyPages" :key="index">
                     <td>{{formatDate(key)}}</td>
                     <td><button v-on:click="getChatLog(item.page)">{{item.page}}</button></td>
                 </tr>
             </table>
-        </div-- >
+        </div-->
+            <div class="flex flex-row items-center bg-white rounded-b-3xl w-full ">
+                <div class="flex flex-row items-center w-full border rounded-b-3xl h-12 px-1">
+                    <!--button class="flex items-center justify-center h-10 w-10 text-gray-400 ml-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                            </path>
+                        </svg>
+                    </button>
+                    <div class="w-full">
+                        <input type="text"
+                            class="border border-transparent w-full focus:outline-none text-sm h-10 flex items-center"
+                            placeholder="Type your message...." />
+                    </div>
+                    <div class="flex flex-row">
+                        <button class="flex items-center justify-center h-10 w-8 text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
+                                </path>
+                            </svg>
+                        </button>
+                        <button class="flex items-center justify-center h-10 w-8 text-gray-400 ml-1 mr-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div-->
+                </div>
+                <!--div class="ml-6 mr-1">
+                    <button
+                        class="flex items-center justify-center h-10 w-10 rounded-full bg-gray-200 hover:bg-gray-300 text-indigo-800 text-white">
+                        <svg class="w-5 h-5 transform rotate-90 -mr-px" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </div-->
+            </div>
+
+
+        </div>
     </div>
     <!-- body end -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+        integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Link VCalendar Javascript (Plugin automatically installed) -->
     <script src='https://unpkg.com/v-calendar'></script>
 
     <script>
-      var app = new Vue({
-        el: '#app',
-        data: {
-            serverUrl: "https://adapi.isp99.com:8443/api/chat",
-            //serverUrl: "http://127.0.0.1:5920/api/chat",
-            hash: "",
-            pg: 0,
-            pickedDate: "",
-            page: 1,
-            isAuth: false,
-            maxPage: 0,
-            pageRanges: [],
-            currentDate: "",
-            selPage: 0,
-            chatLogs: [
-                {
+        var app = new Vue({
+            el: '#app',
+            data: {
+                serverUrl: "https://adapi.isp99.com:8443/api/chat",
+                //serverUrl: "http://127.0.0.1:5920/api/chat",
+                hash: "",
+                pg: 0,
+                pickedDate: "",
+                page: 1,
+                isAuth: false,
+                maxPage: 0,
+                pageRanges: [],
+                currentDate: "",
+                selPage: 0,
+                chatLogs: [
+                    {
+                        "userName": "討厭鬼",
+                        "message": "Test123",
+                        "sendAt": "2021-08-12T14:42:00.000+00:00",
+                        "contentType": "訊息",
+                        "platform": "line",
+                        "joinUser": null,
+                        "phoneCallTime": 0,
+                        "highLine": false
+                    },
+                ],
+                chatLog: {
                     "userName": "討厭鬼",
                     "message": "Test123",
                     "sendAt": "2021-08-12T14:42:00.000+00:00",
@@ -163,206 +351,203 @@
                     "phoneCallTime": 0,
                     "highLine": false
                 },
-            ],
-            chatLog: {
-                "userName": "討厭鬼",
-                "message": "Test123",
-                "sendAt": "2021-08-12T14:42:00.000+00:00",
-                "contentType": "訊息",
-                "platform": "line",
-                "joinUser": null,
-                "phoneCallTime": 0,
-                "highLine": false
-            },
-            summary: {
-                "total_chat": 100033,
-                "total_phone_call": 169,
-                "total_message": 96055,
-                "total_sticker": 2736,
-                "total_video": 24,
-                "total_picture": 961,
-                "total_back": 75,
-                "total_miss_call": 13,
-                "total_phone_call_time": "140:47:41"
-            },
-            dailyPages: {
-                "2021-07-19": {
-                    "page": 308,
-                    "startIdx": 30844,
-                    "chat_sum": null
+                summary: {
+                    "total_chat": 100033,
+                    "total_phone_call": 169,
+                    "total_message": 96055,
+                    "total_sticker": 2736,
+                    "total_video": 24,
+                    "total_picture": 961,
+                    "total_back": 75,
+                    "total_miss_call": 13,
+                    "total_phone_call_time": "140:47:41"
                 },
+                dailyPages: {
+                    "2021-07-19": {
+                        "page": 308,
+                        "startIdx": 30844,
+                        "chat_sum": null
+                    },
+                },
+                chatDates: new Set(),
+                chatUsers: [],
+                selUser: "",
+                rightUser: "",
+                leftUser: "",
+                user1: "",
+                user2: "",
+                firstDate: "",
+                lastDate: "",
             },
-            chatDates: new Set(),
-            chatUsers: [],
-            selUser: "",
-            rightUser: "",
-            user1: "",
-            user2: "",
-            firstDate: "",
-            lastDate: "",
-        },
-        methods: {
-            uploadFile: async function() {
-                var formdata = new FormData();
-                formdata.append("file", fileInput.files[0], "chat.txt");
-                formdata.append("join_user", "charles_remi");
-                let that = this;
-                var requestOptions = {
-                    method: 'POST',
-                    body: formdata,
-                    redirect: 'follow'
-                };
-                
-                fetch(that.serverUrl+"/chat/log", requestOptions)
-                    .then(response => response.text())
-                    .then(result => console.log(result))
-                    .catch(error => console.log('error', error));
-            },   
-            previousPage: async function() {
-                this.getChatLog(parseInt(this.selPage) - 1);
-                //this.page = this.selPage - 1;
-                document.getElementById('chat-table').scrollTop = 999999
-            },
-            nextPage: async function() {
-                this.getChatLog(parseInt(this.selPage) + 1);
-                document.getElementById('chat-table').scrollTop = 0
-                //this.page = this.selPage + 1;
-            },
-            getChatLog: async function(page) {
-                let that = this;
-                that.selPage = page;
-                that.page = page;
-                var requestOptions = {
-                    method: 'GET',
-                    redirect: 'follow'
-                };
-                fetch(that.serverUrl+"/chat/log?page="+page+
-                "&hash="+that.hash, requestOptions)
-                    .then(response => response.text())
-                    .then(function(resp){
-                        let res = JSON.parse(resp)
-                        that.chatLogs = res.data;
-                        that.maxPage = res.page;
-                        console.log(that.chatLogs);
-                    })
-                    .catch(error => console.log('error', error));
-                this.pageRanges = [];
-                for (i = Math.max(parseInt(this.selPage) - 2, 0); 
-                    i < Math.min(parseInt(this.selPage) + 4, this.maxPage); i++) {
-                    this.pageRanges.push(i);
-                    console.log(i);
-                }
-                this.$forceUpdate();
-                
-            },
-            checkAuth: async function() {
-                let that = this;
-                var requestOptions = {
-                    method: 'GET',
-                    redirect: 'follow'
-                };
-                fetch(that.serverUrl+"/chat/log/auth?hash="+that.hash, requestOptions)
-                    .then(response => response.text())
-                    .then(function(resp){
-                        let res = JSON.parse(resp)
-                        that.isAuth = res.result === "success";
-                        if (that.isAuth) {
-                            that.chatUsers = res.data;
-                            console.log(res.data);
-                            that.rightUser = that.chatUsers[1];
-                            let urlParams = new URLSearchParams(window.location.search);
-                            if (urlParams.has('init_page')) {
-                                that.getChatLog(parseInt(urlParams.get('init_page')));
-                            } else {
-                                that.getChatLog(0);
-                            }
-                        }
-                    })
-                    .catch(error => console.log('error', error));
-                // this.user1 = this.chatLogs[0].user_name;
-                this.getDailyPage();
-                this.$forceUpdate();
-            },
-            getDailyPage: async function() {
-                let that = this;
-                var requestOptions = {
-                    method: 'GET',
-                    redirect: 'follow'
-                };
-                fetch(that.serverUrl+"/chat/log/day_page?hash="+that.hash, requestOptions)
-                    .then(response => response.text())
-                    .then(function(resp){
-                        let res = JSON.parse(resp)
-                        that.dailyPages = res.data.datas;
-                        that.firstDate = res.data.first_date;
-                        that.lastDate = res.data.last_date;
-                        const ordered = Object.keys(that.dailyPages).sort().reduce(
-                            (obj, key) => { 
-                                obj[key] = that.dailyPages[key]; 
-                                return obj;
-                            }, 
-                            {}
-                        );
-                        that.dailyPages = ordered;
-                        console.log(res.data);
-                        that.chatDates = new Set(Object.keys(that.dailyPages));
-                    })
-                    .catch(error => console.log('error', error));
-                // this.user1 = this.chatLogs[0].user_name;
-                console.log();
-                this.$forceUpdate();
-            },
-            dateJump() {
-                var selDate = this.pickedDate;//this.formatDate(this.pickedDate);
-                if (selDate != undefined) {
-                    console.log(this.dailyPages[selDate]);
-                    if (this.chatDates.has(selDate)) {
-                        this.getChatLog(this.dailyPages[selDate].page);
-                    }
-                }
-            },
-            formatTime(value) {
-                if (value) { 
-                    return moment(String(value)).format('HH:mm')
-                }
-            },   
-            formatDate(value) {
-                if (value) { 
-                    return moment(String(value)).format('yyyy-MM-DD')
-                }
-            },  
-            formatDateTime(value) {
-                if (value) { 
-                    return moment(String(value)).format('yyyy-MM-DD HH:mm')
-                }
-            },
-            allowedDates(val) {
-                return that.chatDates.has(this.formatDate(val));
-            },
-            initPage() {
-                let urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.has('hash')) {
-                    this.hash = urlParams.get('hash');
-                    this.checkAuth();
-                    this.$forceUpdate();
-                }
-                
-            }
+            methods: {
+                uploadFile: async function () {
+                    var formdata = new FormData();
+                    formdata.append("file", fileInput.files[0], "chat.txt");
+                    formdata.append("join_user", "charles_remi");
+                    let that = this;
+                    var requestOptions = {
+                        method: 'POST',
+                        body: formdata,
+                        redirect: 'follow'
+                    };
 
-        },
-        watch: {
-            selUser: function() {
-                this.rightUser = this.selUser;
-                this.$forceUpdate();
+                    fetch(that.serverUrl + "/chat/log", requestOptions)
+                        .then(response => response.text())
+                        .then(result => console.log(result))
+                        .catch(error => console.log('error', error));
+                },
+                previousPage: async function () {
+                    this.getChatLog(parseInt(this.selPage) - 1);
+                    //this.page = this.selPage - 1;
+                    document.getElementById('chat-table').scrollTop = 999999
+                },
+                nextPage: async function () {
+                    this.getChatLog(parseInt(this.selPage) + 1);
+                    document.getElementById('chat-table').scrollTop = 0
+                    //this.page = this.selPage + 1;
+                },
+                getChatLog: async function (page) {
+                    let that = this;
+                    that.selPage = page;
+                    that.page = page;
+                    var requestOptions = {
+                        method: 'GET',
+                        redirect: 'follow'
+                    };
+                    fetch(that.serverUrl + "/chat/log?page=" + page +
+                        "&hash=" + that.hash, requestOptions)
+                        .then(response => response.text())
+                        .then(function (resp) {
+                            let res = JSON.parse(resp)
+                            that.chatLogs = res.data;
+                            that.maxPage = res.page;
+                            console.log(that.chatLogs);
+                        })
+                        .catch(error => console.log('error', error));
+                    this.pageRanges = [];
+                    for (i = Math.max(parseInt(this.selPage) - 2, 0);
+                        i < Math.min(parseInt(this.selPage) + 4, this.maxPage); i++) {
+                        this.pageRanges.push(i);
+                        console.log(i);
+                    }
+                    this.$forceUpdate();
+
+                },
+                checkAuth: async function () {
+                    let that = this;
+                    var requestOptions = {
+                        method: 'GET',
+                        redirect: 'follow'
+                    };
+                    fetch(that.serverUrl + "/chat/log/auth?hash=" + that.hash, requestOptions)
+                        .then(response => response.text())
+                        .then(function (resp) {
+                            let res = JSON.parse(resp)
+                            that.isAuth = res.result === "success";
+                            if (that.isAuth) {
+                                that.chatUsers = res.data;
+                                console.log(res.data);
+                                that.rightUser = that.chatUsers[1];
+                                that.leftUser = that.chatUsers[0];
+                                let urlParams = new URLSearchParams(window.location.search);
+                                if (urlParams.has('init_page')) {
+                                    that.getChatLog(parseInt(urlParams.get('init_page')));
+                                } else {
+                                    that.getChatLog(0);
+                                }
+                            }
+                        })
+                        .catch(error => console.log('error', error));
+                    // this.user1 = this.chatLogs[0].user_name;
+                    this.getDailyPage();
+                    this.$forceUpdate();
+                },
+                getDailyPage: async function () {
+                    let that = this;
+                    var requestOptions = {
+                        method: 'GET',
+                        redirect: 'follow'
+                    };
+                    fetch(that.serverUrl + "/chat/log/day_page?hash=" + that.hash, requestOptions)
+                        .then(response => response.text())
+                        .then(function (resp) {
+                            let res = JSON.parse(resp)
+                            that.dailyPages = res.data.datas;
+                            that.firstDate = res.data.first_date;
+                            that.lastDate = res.data.last_date;
+                            const ordered = Object.keys(that.dailyPages).sort().reduce(
+                                (obj, key) => {
+                                    obj[key] = that.dailyPages[key];
+                                    return obj;
+                                },
+                                {}
+                            );
+                            that.dailyPages = ordered;
+                            console.log(res.data);
+                            that.chatDates = new Set(Object.keys(that.dailyPages));
+                        })
+                        .catch(error => console.log('error', error));
+                    // this.user1 = this.chatLogs[0].user_name;
+                    console.log();
+                    this.$forceUpdate();
+                },
+                dateJump() {
+                    var selDate = this.pickedDate;//this.formatDate(this.pickedDate);
+                    if (selDate != undefined) {
+                        console.log(this.dailyPages[selDate]);
+                        if (this.chatDates.has(selDate)) {
+                            this.getChatLog(this.dailyPages[selDate].page);
+                        }
+                    }
+                },
+                formatTime(value) {
+                    if (value) {
+                        return moment(String(value)).format('HH:mm')
+                    }
+                },
+                formatDate(value) {
+                    if (value) {
+                        return moment(String(value)).format('yyyy-MM-DD')
+                    }
+                },
+                formatDateTime(value) {
+                    if (value) {
+                        return moment(String(value)).format('yyyy-MM-DD HH:mm')
+                    }
+                },
+                allowedDates(val) {
+                    return that.chatDates.has(this.formatDate(val));
+                },
+                searchKeyWord() {
+                    console.log("hello search");
+                },
+                initPage() {
+                    let urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.has('hash')) {
+                        this.hash = urlParams.get('hash');
+                        this.checkAuth();
+                        this.$forceUpdate();
+                    }
+
+                }
+
             },
-            pickedDate: function() {
-                this.dateJump();
+            watch: {
+                selUser: function () {
+                    this.rightUser = this.selUser;
+                    this.leftUser = this.chatUsers[0]!=this.rightUser ? this.chatUsers[0] : this.chatUsers[1];
+                    this.$forceUpdate();
+                },
+                pickedDate: function () {
+                    this.dateJump();
+                }
+            },
+            mounted: async function () {
+                this.initPage();
             }
-        },
-        mounted: async function() {
-            this.initPage();
-        }
-      })
+        })
     </script>
-  </body>
+
+</body>
+
 </html>
