@@ -77,11 +77,11 @@ public class ChatTextReader {
                     if (tmpString.length == 2) {
                         contentType = ChatContentType.BACK;
                         tmpChat = tmpString[1];
-                        userName = tmpChat.startsWith("您") ? "鋁箔" : "討厭喵喵";
+                        userName = tmpChat.startsWith("您") ? "鋁箔" : "李宜秦";
                         if (tmpChat.startsWith("您")) {
                             userName = "鋁箔";
                         } else {
-                            userName = "討厭喵喵";
+                            userName = "李宜秦";
                         }
 
                     } else {

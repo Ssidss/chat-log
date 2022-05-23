@@ -24,6 +24,9 @@ public class UserInfo {
     @Column(name = "last_login")
     private Date lastLogin;
 
+    @Column(name = "last_use_token")
+    private String lastUseToken;
+
     public String getId() {
         return id;
     }
@@ -66,6 +69,15 @@ public class UserInfo {
 
     public UserInfo setLastLogin(Date lastLogin) {
         this.lastLogin = lastLogin;
+        return this;
+    }
+
+    public String getLastUseToken() {
+        return lastUseToken;
+    }
+
+    public UserInfo setLastUseToken(String lastUseToken) {
+        this.lastUseToken = lastUseToken;
         return this;
     }
 }
