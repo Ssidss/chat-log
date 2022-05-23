@@ -25,14 +25,14 @@ public class TextTest {
         System.out.println(255/100);
     }
 
-    @Test
-    public void callTimeTest() {
-        String phoneTime = "☎ 通話時間26:19";
-        phoneTime = phoneTime.substring(6);
-        String[] phoneTimes = phoneTime.split(":");
-        List<String> times = Arrays.stream(phoneTimes).toList();
-
-    }
+//    @Test
+//    public void callTimeTest() {
+//        String phoneTime = "☎ 通話時間26:19";
+//        phoneTime = phoneTime.substring(6);
+//        String[] phoneTimes = phoneTime.split(":");
+//        List<String> times = Arrays.stream(phoneTimes).toList();
+//
+//    }
 
     @Test
     public void dateTest() {
